@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfumería - Ventas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+        nav {
+            background: #2c3e50;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav h1 { color: white; font-size: 20px; }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+        nav a:hover { text-decoration: underline; }
+
+        .container { padding: 30px; max-width: 1100px; margin: auto; }
+
+        h2 { margin-bottom: 20px; color: #2c3e50; }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .toolbar input, .toolbar select {
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .toolbar input { flex: 1; }
+        .toolbar button {
+            padding: 10px 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .toolbar button:hover { background: #34495e; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:hover { background: #f9f9f9; }
+
+        .resumen-total {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: right;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        .resumen-total span { font-weight: bold; }
+
+        .vacio {
+            text-align: center;
+            padding: 60px;
+            color: #aaa;
+            font-size: 16px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>🧴 Perfumería</h1>
+    <div>
+        <span style="color:#aaa;font-size:13px;margin-right:15px">👤 <span id="nombreUsuario"></span></span>
+        <a href="index.html">Productos</a>
+        <a href="carrito.html">Carrito</a>
+        <a href="gestion.html" id="linkGestion">Gestión</a>
+        <a href="ventas.html">Ventas</a>
+        <a href="#" onclick="cerrarSesion()" style="color:#e74c3c">Salir</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>📋 Historial de ventas</h2>
+
+    <div class="toolbar">
+        <input type="text" id="inputCliente" placeholder="Filtrar por cliente..."/>
+        <input type="date" id="inputFecha"/>
+        <button onclick="filtrar()">Filtrar</button>
+        <button onclick="cargarTodas()" style="background:#7f8c8d">Ver todas</button>
+    </div>
+
+    <div id="contenido"></div>
+</div>
+
+<script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+   if (!usuario) window.location.href = 'login.html';
+if (usuario.categoria !== 'ADMINISTRADOR') window.location.href = 'index.html';
+
+    document.getElementById('nombreUsuario').textContent = usuario.nombre;
+    if (usuario.categoria !== 'ADMINISTRADOR') {
+        document.getElementById('linkGestion').style.display = 'none';
+    }
+
+    function cerrarSesion() {
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('carrito');
+        window.location.href = 'login.html';
+    }
+
+    const API = 'http://localhost:8080/api/ventas';
+    let todasLasVentas = [];
+
+    function formatearFecha(fechaStr) {
+        const fecha = new Date(fechaStr);
+        return fecha.toLocaleDateString('es-AR') + ' ' + fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderTabla(ventas) {
+        const contenido = document.getElementById('contenido');
+
+        if (ventas.length === 0) {
+            contenido.innerHTML = '<div class="vacio">No se encontraron ventas</div>';
+            return;
+        }
+
+        const total = ventas.reduce((acc, v) => acc + v.total, 0);
+
+        const filas = ventas.map(v => `
+            <tr>
+                <td>${v.id}</td>
+                <td>${v.vendedor}</td>
+                <td>${v.cliente}</td>
+                <td>$${v.total.toFixed(2)}</td>
+                <td>${formatearFecha(v.fecha)}</td>
+            </tr>
+        `).join('');
+
+        contenido.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vendedor</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>${filas}</tbody>
+            </table>
+            <div class="resumen-total">
+                Total de ventas mostradas: <span>$${total.toFixed(2)}</span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                Cantidad: <span>${ventas.length}</span>
+            </div>
+        `;
+    }
+
+    function filtrar() {
+        const cliente = document.getElementById('inputCliente').value.trim().toLowerCase();
+        const fecha = document.getElementById('inputFecha').value;
+
+        let filtradas = todasLasVentas;
+
+        if (cliente) {
+            filtradas = filtradas.filter(v => v.cliente.toLowerCase().includes(cliente));
+        }
+
+        if (fecha) {
+            filtradas = filtradas.filter(v => v.fecha.startsWith(fecha));
+        }
+
+        renderTabla(filtradas);
+    }
+
+    async function cargarTodas() {
+        document.getElementById('inputCliente').value = '';
+        document.getElementById('inputFecha').value = '';
+
+        // Si es vendedor solo ve sus ventas, si es admin ve todas
+        const url = usuario.categoria === 'ADMINISTRADOR'
+            ? API
+            : `${API}/vendedor/${usuario.nombre}`;
+
+        const res = await fetch(url);
+        todasLasVentas = await res.json();
+        renderTabla(todasLasVentas);
+    }
+
+    cargarTodas();
+</script>
+
+</body>
+</html>
