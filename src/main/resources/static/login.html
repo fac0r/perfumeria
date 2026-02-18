@@ -103,6 +103,11 @@
 </div>
 
 <script>
+
+    const BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://perfumeria-production-574f.up.railway.app';
+
     // Si ya hay sesión activa, redirigir
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (usuario) window.location.href = 'index.html';
@@ -117,7 +122,7 @@
 
         if (!nombre || !password) return;
 
-        const res = await fetch('http://localhost:8080/api/usuarios/login', {
+        const res = await fetch(`${BASE_URL}/api/usuarios/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, password })
