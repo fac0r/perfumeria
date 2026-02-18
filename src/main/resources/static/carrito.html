@@ -304,15 +304,15 @@ async function confirmarVenta() {
 
     const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-    const res = await fetch('http://localhost:8080/api/ventas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            vendedor: usuario.nombre,
-            cliente: cliente,
-            carrito: carrito
-        })
-    });
+  const res = await fetch(`${BASE_URL}/api/ventas`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        vendedor: usuario.nombre,
+        cliente: cliente,
+        carrito: carrito
+    })
+});
 
     if (res.ok) {
         const data = await res.json();
