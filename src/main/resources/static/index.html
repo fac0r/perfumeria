@@ -114,6 +114,7 @@
         <span style="color:#aaa;font-size:13px;margin-right:15px">👤 <span id="nombreUsuario"></span></span>
         <a href="index.html">Productos</a>
         <a href="carrito.html">Carrito</a>
+        <a href="ventas.html" id="linkMisVentas" style="display:none">Mis Ventas</a>
         <a href="gestion.html" id="linkGestion">Gestión</a>
         <a href="#" onclick="cerrarSesion()" style="color:#e74c3c">Salir</a>
     </div>
@@ -158,6 +159,7 @@ if (!usuario) window.location.href = 'login.html';
 document.getElementById('nombreUsuario').textContent = usuario.nombre;
 if (usuario.categoria !== 'ADMINISTRADOR') {
     document.getElementById('linkGestion').style.display = 'none';
+    document.getElementById('linkMisVentas').style.display = 'inline';
 }
 
 function cerrarSesion() {
