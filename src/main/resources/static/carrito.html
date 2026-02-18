@@ -10,24 +10,51 @@
 
         nav {
             background: #2c3e50;
-            padding: 15px 30px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         nav h1 { color: white; font-size: 20px; }
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            font-size: 14px;
+        .nav-links { display: flex; align-items: center; gap: 5px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 15px; font-size: 14px; }
+        .nav-links a:hover { text-decoration: underline; }
+        .nav-usuario { color: #aaa; font-size: 13px; margin-right: 10px; }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            background: none;
+            border: none;
+            padding: 5px;
         }
-        nav a:hover { text-decoration: underline; }
+        .hamburger span { display: block; width: 25px; height: 2px; background: white; border-radius: 2px; }
 
-        .container { padding: 30px; max-width: 900px; margin: auto; }
+        @media (max-width: 640px) {
+            .hamburger { display: flex; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%; left: 0; right: 0;
+                background: #2c3e50;
+                flex-direction: column;
+                padding: 15px 20px;
+                gap: 12px;
+                z-index: 100;
+                border-top: 1px solid #34495e;
+            }
+            .nav-links.open { display: flex; }
+            .nav-links a { margin-left: 0; font-size: 16px; padding: 5px 0; }
+            .nav-usuario { display: block; margin-right: 0; font-size: 14px; }
+        }
 
+        .container { padding: 20px; max-width: 900px; margin: auto; }
         h2 { margin-bottom: 20px; color: #2c3e50; }
 
+        .tabla-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -36,19 +63,14 @@
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            min-width: 450px;
         }
-        th {
-            background: #2c3e50;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-size: 14px;
-        }
+        th { background: #2c3e50; color: white; padding: 12px; text-align: left; font-size: 14px; }
         td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
         tr:hover { background: #f9f9f9; }
 
         .btn-eliminar {
-            padding: 6px 12px;
+            padding: 8px 12px;
             background: #e74c3c;
             color: white;
             border: none;
@@ -68,35 +90,40 @@
         .resumen p { font-size: 16px; margin-bottom: 10px; color: #2c3e50; }
         .resumen p span { font-weight: bold; }
 
+        .botones-resumen {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         .btn-venta {
-            padding: 12px 30px;
+            padding: 12px 24px;
             background: #27ae60;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
+            font-size: 15px;
         }
         .btn-venta:hover { background: #219150; }
         .btn-venta:disabled { background: #ccc; cursor: not-allowed; }
 
         .btn-vaciar {
-            padding: 12px 30px;
+            padding: 12px 24px;
             background: #e74c3c;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-            margin-right: 10px;
+            font-size: 15px;
         }
         .btn-vaciar:hover { background: #c0392b; }
 
         .carrito-vacio {
             text-align: center;
-            padding: 60px;
+            padding: 60px 20px;
             color: #aaa;
             font-size: 18px;
             background: white;
@@ -112,21 +139,58 @@
         }
         .mensaje.ok { background: #d4edda; color: #155724; display: block; }
         .mensaje.error { background: #f8d7da; color: #721c24; display: block; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { margin-bottom: 20px; color: #2c3e50; }
+        .modal-box label { display: block; margin-bottom: 5px; font-size: 14px; color: #555; }
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .modal-botones { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-cancelar { padding: 10px 20px; background: #7f8c8d; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-confirmar { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+
+        @media (max-width: 640px) {
+            td, th { padding: 8px; font-size: 13px; }
+            .container { padding: 12px; }
+            .botones-resumen { justify-content: stretch; }
+            .btn-venta, .btn-vaciar { flex: 1; text-align: center; }
+        }
     </style>
 </head>
 
-<!-- Modal cliente -->
-<div class="modal-overlay" id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
-    <div style="background:white; padding:30px; border-radius:8px; width:350px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-        <h3 style="margin-bottom:20px; color:#2c3e50;">Confirmar venta</h3>
-        <div style="margin-bottom:15px;">
-            <label style="display:block; margin-bottom:5px; font-size:14px; color:#555;">Nombre del cliente</label>
-            <input type="text" id="inputCliente" placeholder="Nombre del cliente"
-                   style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px; font-size:15px;"/>
-        </div>
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-            <button onclick="cerrarModal()" style="padding:10px 20px; background:#7f8c8d; color:white; border:none; border-radius:4px; cursor:pointer;">Cancelar</button>
-            <button onclick="confirmarVenta()" style="padding:10px 20px; background:#27ae60; color:white; border:none; border-radius:4px; cursor:pointer;">Confirmar</button>
+<div class="modal-overlay" id="modalOverlay" style="display:none;">
+    <div class="modal-box">
+        <h3>Confirmar venta</h3>
+        <label>Nombre del cliente</label>
+        <input type="text" id="inputCliente" placeholder="Nombre del cliente"/>
+        <div class="modal-botones">
+            <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-confirmar" onclick="confirmarVenta()">Confirmar</button>
         </div>
     </div>
 </div>
@@ -135,45 +199,43 @@
 
 <nav>
     <h1>🧴 Perfumería</h1>
-    <div>
-        <span style="color:#aaa;font-size:13px;margin-right:15px">👤 <span id="nombreUsuario"></span></span>
+    <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+    <div class="nav-links" id="navLinks">
+        <span class="nav-usuario">👤 <span id="nombreUsuario"></span></span>
         <a href="index.html">Productos</a>
         <a href="carrito.html">Carrito</a>
         <a href="gestion.html" id="linkGestion">Gestión</a>
-
         <a href="#" onclick="cerrarSesion()" style="color:#e74c3c">Salir</a>
     </div>
 </nav>
 
 <div class="container">
     <h2>🛒 Carrito de venta</h2>
-
     <div id="mensaje" class="mensaje"></div>
     <div id="contenido"></div>
 </div>
 
 <script>
-    // Control de sesión - agregar al inicio del script en index, carrito y gestion
-const usuario = JSON.parse(localStorage.getItem('usuario'));
-if (!usuario) window.location.href = 'login.html';
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) window.location.href = 'login.html';
 
-// Mostrar nombre y controlar visibilidad de Gestión
-document.getElementById('nombreUsuario').textContent = usuario.nombre;
-if (usuario.categoria !== 'ADMINISTRADOR') {
-    document.getElementById('linkGestion').style.display = 'none';
-}
+    document.getElementById('nombreUsuario').textContent = usuario.nombre;
+    if (usuario.categoria !== 'ADMINISTRADOR') {
+        document.getElementById('linkGestion').style.display = 'none';
+    }
 
-function cerrarSesion() {
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('carrito');
-    window.location.href = 'login.html';
-}
+    function toggleMenu() { document.getElementById('navLinks').classList.toggle('open'); }
+
+    function cerrarSesion() {
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('carrito');
+        window.location.href = 'login.html';
+    }
 
     const BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://perfumeria-production-574f.up.railway.app';
-
-const API = `${BASE_URL}/api/productos`;
+        ? 'http://localhost:8080'
+        : 'https://perfumeria-production-574f.up.railway.app';
+    const API = `${BASE_URL}/api/productos`;
 
     let carrito = JSON.parse(localStorage.getItem('carrito')) || {};
     let productosCache = {};
@@ -186,8 +248,7 @@ const API = `${BASE_URL}/api/productos`;
     }
 
     function calcularTotales() {
-        let totalMayorista = 0;
-        let totalSugerido = 0;
+        let totalMayorista = 0, totalSugerido = 0;
         Object.entries(carrito).forEach(([id, cant]) => {
             const p = productosCache[id];
             if (p) {
@@ -206,7 +267,7 @@ const API = `${BASE_URL}/api/productos`;
 
     function actualizarCantidad(id, nuevaCant) {
         const p = productosCache[id];
-        if (nuevaCant < 1) { nuevaCant = 1; }
+        if (nuevaCant < 1) nuevaCant = 1;
         if (p && nuevaCant > p.stock) {
             mostrarMensaje(`Stock disponible: ${p.stock}`, 'error');
             document.getElementById('cant-' + id).value = carrito[id];
@@ -216,7 +277,6 @@ const API = `${BASE_URL}/api/productos`;
         localStorage.setItem('carrito', JSON.stringify(carrito));
         const { totalMayorista } = calcularTotales();
         document.getElementById('totalMayorista').textContent = '$' + totalMayorista.toFixed(2);
-
     }
 
     function renderCarrito() {
@@ -228,7 +288,7 @@ const API = `${BASE_URL}/api/productos`;
             return;
         }
 
-        const { totalMayorista, totalSugerido } = calcularTotales();
+        const { totalMayorista } = calcularTotales();
 
         let filas = ids.map(id => {
             const p = productosCache[id];
@@ -239,11 +299,7 @@ const API = `${BASE_URL}/api/productos`;
                     <td>${p.producto}</td>
                     <td>${p.precioMayorista ? '$' + p.precioMayorista.toFixed(2) : '-'}</td>
                     <td>${p.precioSugerido ? '$' + p.precioSugerido.toFixed(2) : '-'}</td>
-                    <td>
-                        <input type="number" id="cant-${id}" value="${cant}" min="1" max="${p.stock}"
-                            style="width:60px;padding:4px;"
-                            onchange="actualizarCantidad(${id}, this.value)"/>
-                    </td>
+                    <td><input type="number" id="cant-${id}" value="${cant}" min="1" max="${p.stock}" style="width:55px;padding:4px;" onchange="actualizarCantidad(${id}, this.value)"/></td>
                     <td>$${((p.precioSugerido || 0) * cant).toFixed(2)}</td>
                     <td><button class="btn-eliminar" onclick="eliminarDelCarrito(${id})">Quitar</button></td>
                 </tr>
@@ -251,25 +307,27 @@ const API = `${BASE_URL}/api/productos`;
         }).join('');
 
         contenido.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>P. Mayorista</th>
-                        <th>P. Sugerido</th>
-                        <th>Cantidad</th>
-                        <th>Subtotal</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>${filas}</tbody>
-            </table>
+            <div class="tabla-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>P. Mayorista</th>
+                            <th>P. Sugerido</th>
+                            <th>Cant.</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>${filas}</tbody>
+                </table>
+            </div>
             <div class="resumen">
                 <p>Total: <span id="totalMayorista">$${totalMayorista.toFixed(2)}</span></p>
-
-                <br>
-                <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
-                <button class="btn-venta" onclick="realizarVenta()">✅ Realizar venta</button>
+                <div class="botones-resumen">
+                    <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
+                    <button class="btn-venta" onclick="realizarVenta()">✅ Realizar venta</button>
+                </div>
             </div>
         `;
     }
@@ -281,57 +339,44 @@ const API = `${BASE_URL}/api/productos`;
         renderCarrito();
     }
 
-   function cerrarModal() {
-    document.getElementById('modalOverlay').style.display = 'none';
-    document.getElementById('inputCliente').value = '';
-}
-
-function realizarVenta() {
-    if (Object.keys(carrito).length === 0) {
-        mostrarMensaje('El carrito está vacío', 'error');
-        return;
-    }
-    document.getElementById('modalOverlay').style.display = 'flex';
-    document.getElementById('inputCliente').focus();
-}
-
-async function confirmarVenta() {
-    const cliente = document.getElementById('inputCliente').value.trim();
-    if (!cliente) {
-        mostrarMensaje('Ingresá el nombre del cliente', 'error');
-        return;
+    function cerrarModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+        document.getElementById('inputCliente').value = '';
     }
 
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-  const res = await fetch(`${BASE_URL}/api/ventas`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        vendedor: usuario.nombre,
-        cliente: cliente,
-        carrito: carrito
-    })
-});
-
-    if (res.ok) {
-        const data = await res.json();
-        cerrarModal();
-        mostrarMensaje(`✅ Venta realizada. Total: $${data.total.toFixed(2)}`, 'ok');
-        carrito = {};
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        setTimeout(() => renderCarrito(), 2000);
-    } else {
-        const error = await res.text();
-        mostrarMensaje('❌ Error: ' + error, 'error');
+    function realizarVenta() {
+        if (Object.keys(carrito).length === 0) { mostrarMensaje('El carrito está vacío', 'error'); return; }
+        document.getElementById('modalOverlay').style.display = 'flex';
+        document.getElementById('inputCliente').focus();
     }
-}
+
+    async function confirmarVenta() {
+        const cliente = document.getElementById('inputCliente').value.trim();
+        if (!cliente) { mostrarMensaje('Ingresá el nombre del cliente', 'error'); return; }
+
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const res = await fetch(`${BASE_URL}/api/ventas`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ vendedor: usuario.nombre, cliente, carrito })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            cerrarModal();
+            mostrarMensaje(`✅ Venta realizada. Total: $${data.total.toFixed(2)}`, 'ok');
+            carrito = {};
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            setTimeout(() => renderCarrito(), 2000);
+        } else {
+            const error = await res.text();
+            mostrarMensaje('❌ Error: ' + error, 'error');
+        }
+    }
 
     async function init() {
-        // Cargar datos de los productos del carrito
         const ids = Object.keys(carrito);
         if (ids.length === 0) { renderCarrito(); return; }
-
         const res = await fetch(API);
         const todos = await res.json();
         todos.forEach(p => productosCache[p.id] = p);

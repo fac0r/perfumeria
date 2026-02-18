@@ -8,31 +8,77 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Arial, sans-serif; background: #f4f4f4; }
 
+        /* NAV */
         nav {
             background: #2c3e50;
-            padding: 15px 30px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         nav h1 { color: white; font-size: 20px; }
-        nav a {
+        .nav-links { display: flex; align-items: center; gap: 5px; }
+        .nav-links a {
             color: white;
             text-decoration: none;
-            margin-left: 20px;
+            margin-left: 15px;
             font-size: 14px;
         }
-        nav a:hover { text-decoration: underline; }
+        .nav-links a:hover { text-decoration: underline; }
+        .nav-usuario { color: #aaa; font-size: 13px; margin-right: 10px; }
 
-        .container { padding: 30px; max-width: 1200px; margin: auto; }
+        /* HAMBURGER */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* MOBILE MENU */
+        @media (max-width: 640px) {
+            .hamburger { display: flex; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #2c3e50;
+                flex-direction: column;
+                padding: 15px 20px;
+                gap: 12px;
+                z-index: 100;
+                border-top: 1px solid #34495e;
+            }
+            .nav-links.open { display: flex; }
+            .nav-links a { margin-left: 0; font-size: 16px; padding: 5px 0; }
+            .nav-usuario { display: block; margin-right: 0; font-size: 14px; }
+        }
+
+        .container { padding: 20px; max-width: 1200px; margin: auto; }
 
         .buscador {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .buscador input {
             flex: 1;
+            min-width: 150px;
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -45,10 +91,12 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
         }
         .buscador button:hover { background: #34495e; }
 
+        /* TABLE RESPONSIVE */
+        .tabla-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -56,6 +104,7 @@
             border-radius: 4px;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            min-width: 500px;
         }
         th {
             background: #2c3e50;
@@ -71,28 +120,30 @@
         .stock-null { color: #aaa; }
 
         .btn-agregar {
-            padding: 6px 12px;
+            padding: 8px 14px;
             background: #27ae60;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
+            white-space: nowrap;
         }
         .btn-agregar:hover { background: #219150; }
         .btn-agregar:disabled { background: #ccc; cursor: not-allowed; }
 
         .carrito-flotante {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 20px;
             background: #2c3e50;
             color: white;
-            padding: 15px 25px;
+            padding: 14px 22px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 50;
         }
         .carrito-flotante:hover { background: #34495e; }
 
@@ -104,14 +155,23 @@
         }
         .mensaje.ok { background: #d4edda; color: #155724; display: block; }
         .mensaje.error { background: #f8d7da; color: #721c24; display: block; }
+
+        /* Input cantidad en móvil */
+        @media (max-width: 640px) {
+            td, th { padding: 8px; font-size: 13px; }
+            .container { padding: 12px; }
+        }
     </style>
 </head>
 <body>
 
 <nav>
     <h1>🧴 Perfumería</h1>
-    <div>
-        <span style="color:#aaa;font-size:13px;margin-right:15px">👤 <span id="nombreUsuario"></span></span>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menú">
+        <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <span class="nav-usuario">👤 <span id="nombreUsuario"></span></span>
         <a href="index.html">Productos</a>
         <a href="carrito.html">Carrito</a>
         <a href="ventas.html" id="linkMisVentas" style="display:none">Mis Ventas</a>
@@ -129,20 +189,22 @@
 
     <div id="mensaje" class="mensaje"></div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Producto</th>
-            <th>Precio Mayorista</th>
-            <th>Precio Sugerido</th>
-            <th>Stock</th>
-            <th>Cantidad</th>
-            <th>Acción</th>
-        </tr>
-        </thead>
-        <tbody id="tablaProductos"></tbody>
-    </table>
+    <div class="tabla-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>P. Mayorista</th>
+                <th>P. Sugerido</th>
+                <th>Stock</th>
+                <th>Cant.</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody id="tablaProductos"></tbody>
+        </table>
+    </div>
 </div>
 
 <div class="carrito-flotante" onclick="window.location.href='carrito.html'">
@@ -150,32 +212,30 @@
 </div>
 
 <script>
-    // Control de sesión - agregar al inicio del script en index, carrito y gestion
-const usuario = JSON.parse(localStorage.getItem('usuario'));
-if (!usuario) window.location.href = 'login.html';
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) window.location.href = 'login.html';
 
+    document.getElementById('nombreUsuario').textContent = usuario.nombre;
+    if (usuario.categoria !== 'ADMINISTRADOR') {
+        document.getElementById('linkGestion').style.display = 'none';
+        document.getElementById('linkMisVentas').style.display = 'inline';
+    }
 
-// Mostrar nombre y controlar visibilidad de Gestión
-document.getElementById('nombreUsuario').textContent = usuario.nombre;
-if (usuario.categoria !== 'ADMINISTRADOR') {
-    document.getElementById('linkGestion').style.display = 'none';
-    document.getElementById('linkMisVentas').style.display = 'inline';
-}
+    function toggleMenu() {
+        document.getElementById('navLinks').classList.toggle('open');
+    }
 
-function cerrarSesion() {
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('carrito');
-    window.location.href = 'login.html';
-}
+    function cerrarSesion() {
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('carrito');
+        window.location.href = 'login.html';
+    }
 
+    const BASE_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:8080'
+        : 'https://perfumeria-production-574f.up.railway.app';
+    const API = `${BASE_URL}/api/productos`;
 
-       const BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://perfumeria-production-574f.up.railway.app';
-
-const API = `${BASE_URL}/api/productos`;
-
-    // Cargar carrito del localStorage
     let carrito = JSON.parse(localStorage.getItem('carrito')) || {};
 
     function actualizarContadorCarrito() {
@@ -201,9 +261,7 @@ const API = `${BASE_URL}/api/productos`;
 
         productos.forEach(p => {
             const stockDisponible = p.stock !== null && p.stock > 0;
-            const cantidadEnCarrito = carrito[p.id] || 0;
             const maxCantidad = p.stock || 0;
-
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${p.id}</td>
@@ -211,16 +269,8 @@ const API = `${BASE_URL}/api/productos`;
                 <td>${p.precioMayorista ? '$' + p.precioMayorista.toFixed(2) : '-'}</td>
                 <td>${p.precioSugerido ? '$' + p.precioSugerido.toFixed(2) : '-'}</td>
                 <td class="${stockDisponible ? 'stock-ok' : 'stock-null'}">${p.stock !== null ? p.stock : 'Sin datos'}</td>
-                <td>
-                    <input type="number" min="1" max="${maxCantidad}" value="1"
-                        id="cant-${p.id}" style="width:60px;padding:4px;" ${!stockDisponible ? 'disabled' : ''}/>
-                </td>
-                <td>
-                    <button class="btn-agregar" onclick="agregarAlCarrito(${p.id}, '${p.producto}', ${p.stock})"
-                        ${!stockDisponible ? 'disabled' : ''}>
-                        ${stockDisponible ? 'Agregar' : 'Sin stock'}
-                    </button>
-                </td>
+                <td><input type="number" min="1" max="${maxCantidad}" value="1" id="cant-${p.id}" style="width:55px;padding:4px;" ${!stockDisponible ? 'disabled' : ''}/></td>
+                <td><button class="btn-agregar" onclick="agregarAlCarrito(${p.id}, '${p.producto}', ${p.stock})" ${!stockDisponible ? 'disabled' : ''}>${stockDisponible ? 'Agregar' : 'Sin stock'}</button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -229,43 +279,29 @@ const API = `${BASE_URL}/api/productos`;
     function agregarAlCarrito(id, nombre, stock) {
         const cantInput = document.getElementById('cant-' + id);
         const cant = parseInt(cantInput.value);
-
-        if (isNaN(cant) || cant < 1) {
-            mostrarMensaje('Ingresá una cantidad válida', 'error');
-            return;
-        }
-        if (cant > stock) {
-            mostrarMensaje('No hay suficiente stock', 'error');
-            return;
-        }
-
+        if (isNaN(cant) || cant < 1) { mostrarMensaje('Ingresá una cantidad válida', 'error'); return; }
+        if (cant > stock) { mostrarMensaje('No hay suficiente stock', 'error'); return; }
         carrito[id] = (carrito[id] || 0) + cant;
         localStorage.setItem('carrito', JSON.stringify(carrito));
         actualizarContadorCarrito();
         mostrarMensaje(`"${nombre}" agregado al carrito`, 'ok');
     }
 
-    function buscarEnter(event) {
-        if (event.key === 'Enter') buscar();
-    }
+    function buscarEnter(event) { if (event.key === 'Enter') buscar(); }
 
     async function buscar() {
         const nombre = document.getElementById('inputBuscar').value.trim();
         if (!nombre) { cargarTodos(); return; }
-
         const res = await fetch(`${API}/buscar?nombre=${encodeURIComponent(nombre)}`);
-        const productos = await res.json();
-        renderTabla(productos);
+        renderTabla(await res.json());
     }
 
     async function cargarTodos() {
         document.getElementById('inputBuscar').value = '';
         const res = await fetch(API);
-        const productos = await res.json();
-        renderTabla(productos);
+        renderTabla(await res.json());
     }
 
-   // Inicializar
     actualizarContadorCarrito();
     document.getElementById('tablaProductos').innerHTML =
         '<tr><td colspan="7" style="text-align:center;color:#aaa;padding:40px">Buscá un producto para comenzar</td></tr>';
