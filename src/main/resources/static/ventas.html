@@ -123,105 +123,104 @@
 <script>
     const usuario = JSON.parse(localStorage.getItem('usuario'));
    if (!usuario) window.location.href = 'login.html';
-if (usuario.categoria !== 'ADMINISTRADOR') window.location.href = 'index.html';
 
-    document.getElementById('nombreUsuario').textContent = usuario.nombre;
-    if (usuario.categoria !== 'ADMINISTRADOR') {
-        document.getElementById('linkGestion').style.display = 'none';
-    }
+   document.getElementById('nombreUsuario').textContent = usuario.nombre;
+   if (usuario.categoria !== 'ADMINISTRADOR') {
+       document.getElementById('linkGestion').style.display = 'none';
+   }
 
-    function cerrarSesion() {
-        localStorage.removeItem('usuario');
-        localStorage.removeItem('carrito');
-        window.location.href = 'login.html';
-    }
+       function cerrarSesion() {
+           localStorage.removeItem('usuario');
+           localStorage.removeItem('carrito');
+           window.location.href = 'login.html';
+       }
 
-       const BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
-  : 'https://perfumeria-production-574f.up.railway.app';
+          const BASE_URL = window.location.hostname === 'localhost'
+     ? 'http://localhost:8080'
+     : 'https://perfumeria-production-574f.up.railway.app';
 
-const API = `${BASE_URL}/api/ventas`;
+   const API = `${BASE_URL}/api/ventas`;
 
-    let todasLasVentas = [];
+       let todasLasVentas = [];
 
-    function formatearFecha(fechaStr) {
-        const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-AR') + ' ' + fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-    }
+       function formatearFecha(fechaStr) {
+           const fecha = new Date(fechaStr);
+           return fecha.toLocaleDateString('es-AR') + ' ' + fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+       }
 
-    function renderTabla(ventas) {
-        const contenido = document.getElementById('contenido');
+       function renderTabla(ventas) {
+           const contenido = document.getElementById('contenido');
 
-        if (ventas.length === 0) {
-            contenido.innerHTML = '<div class="vacio">No se encontraron ventas</div>';
-            return;
-        }
+           if (ventas.length === 0) {
+               contenido.innerHTML = '<div class="vacio">No se encontraron ventas</div>';
+               return;
+           }
 
-        const total = ventas.reduce((acc, v) => acc + v.total, 0);
+           const total = ventas.reduce((acc, v) => acc + v.total, 0);
 
-        const filas = ventas.map(v => `
-            <tr>
-                <td>${v.id}</td>
-                <td>${v.vendedor}</td>
-                <td>${v.cliente}</td>
-                <td>$${v.total.toFixed(2)}</td>
-                <td>${formatearFecha(v.fecha)}</td>
-            </tr>
-        `).join('');
+           const filas = ventas.map(v => `
+               <tr>
+                   <td>${v.id}</td>
+                   <td>${v.vendedor}</td>
+                   <td>${v.cliente}</td>
+                   <td>$${v.total.toFixed(2)}</td>
+                   <td>${formatearFecha(v.fecha)}</td>
+               </tr>
+           `).join('');
 
-        contenido.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Vendedor</th>
-                        <th>Cliente</th>
-                        <th>Total</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>${filas}</tbody>
-            </table>
-            <div class="resumen-total">
-                Total de ventas mostradas: <span>$${total.toFixed(2)}</span>
-                &nbsp;&nbsp;|&nbsp;&nbsp;
-                Cantidad: <span>${ventas.length}</span>
-            </div>
-        `;
-    }
+           contenido.innerHTML = `
+               <table>
+                   <thead>
+                       <tr>
+                           <th>ID</th>
+                           <th>Vendedor</th>
+                           <th>Cliente</th>
+                           <th>Total</th>
+                           <th>Fecha</th>
+                       </tr>
+                   </thead>
+                   <tbody>${filas}</tbody>
+               </table>
+               <div class="resumen-total">
+                   Total de ventas mostradas: <span>$${total.toFixed(2)}</span>
+                   &nbsp;&nbsp;|&nbsp;&nbsp;
+                   Cantidad: <span>${ventas.length}</span>
+               </div>
+           `;
+       }
 
-    function filtrar() {
-        const cliente = document.getElementById('inputCliente').value.trim().toLowerCase();
-        const fecha = document.getElementById('inputFecha').value;
+       function filtrar() {
+           const cliente = document.getElementById('inputCliente').value.trim().toLowerCase();
+           const fecha = document.getElementById('inputFecha').value;
 
-        let filtradas = todasLasVentas;
+           let filtradas = todasLasVentas;
 
-        if (cliente) {
-            filtradas = filtradas.filter(v => v.cliente.toLowerCase().includes(cliente));
-        }
+           if (cliente) {
+               filtradas = filtradas.filter(v => v.cliente.toLowerCase().includes(cliente));
+           }
 
-        if (fecha) {
-            filtradas = filtradas.filter(v => v.fecha.startsWith(fecha));
-        }
+           if (fecha) {
+               filtradas = filtradas.filter(v => v.fecha.startsWith(fecha));
+           }
 
-        renderTabla(filtradas);
-    }
+           renderTabla(filtradas);
+       }
 
-    async function cargarTodas() {
-        document.getElementById('inputCliente').value = '';
-        document.getElementById('inputFecha').value = '';
+       async function cargarTodas() {
+           document.getElementById('inputCliente').value = '';
+           document.getElementById('inputFecha').value = '';
 
-        // Si es vendedor solo ve sus ventas, si es admin ve todas
-        const url = usuario.categoria === 'ADMINISTRADOR'
-            ? API
-            : `${API}/vendedor/${usuario.nombre}`;
+           // Si es vendedor solo ve sus ventas, si es admin ve todas
+           const url = usuario.categoria === 'ADMINISTRADOR'
+               ? API
+               : `${API}/vendedor/${usuario.nombre}`;
 
-        const res = await fetch(url);
-        todasLasVentas = await res.json();
-        renderTabla(todasLasVentas);
-    }
+           const res = await fetch(url);
+           todasLasVentas = await res.json();
+           renderTabla(todasLasVentas);
+       }
 
-    cargarTodas();
+       cargarTodas();
 </script>
 
 </body>
