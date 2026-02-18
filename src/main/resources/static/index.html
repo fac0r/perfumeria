@@ -167,7 +167,11 @@ function cerrarSesion() {
 }
 
 
-    const API = 'http://localhost:8080/api/productos';
+       const BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : 'https://perfumeria-production-574f.up.railway.app';
+
+const API = `${BASE_URL}/api/productos`;
 
     // Cargar carrito del localStorage
     let carrito = JSON.parse(localStorage.getItem('carrito')) || {};

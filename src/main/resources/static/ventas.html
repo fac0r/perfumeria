@@ -136,7 +136,12 @@ if (usuario.categoria !== 'ADMINISTRADOR') window.location.href = 'index.html';
         window.location.href = 'login.html';
     }
 
-    const API = 'http://localhost:8080/api/ventas';
+       const BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : 'https://perfumeria-production-574f.up.railway.app';
+
+const API = `${BASE_URL}/api/ventas`;
+
     let todasLasVentas = [];
 
     function formatearFecha(fechaStr) {
